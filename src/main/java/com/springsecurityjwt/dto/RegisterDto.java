@@ -14,6 +14,6 @@ public record RegisterDto(
         @NotNull(message = "Name cannot be empty")
         String name,
         @NotNull(message = "Role cannot be empty")
-        Set<Role> role
+        Set<Role> roles
 ) {
 }
