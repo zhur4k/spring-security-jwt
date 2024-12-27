@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/security/test")
 public class SecurityJwtTestController {
 
-    @PreAuthorize("hasAnyRole('USER', 'MODERATOR', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('USER', 'MODERATOR', 'SUPER_ADMIN')")
     @GetMapping("/user")
     public String testUser() {
         return "User";
     }
 
-    @PreAuthorize("hasAnyRole('MODERATOR', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('MODERATOR', 'SUPER_ADMIN')")
     @GetMapping("/moderator")
     public String testModerator() {
         return "Moderator";
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping("/super_admin")
     public String testSuperAdmin() {
         return "SuperAdmin";
