@@ -1,4 +1,4 @@
-package com.springsecurityjwt.service;
+package com.springsecurityjwt.service.impl;
 
 import com.springsecurityjwt.UserRepository;
 import lombok.AllArgsConstructor;
