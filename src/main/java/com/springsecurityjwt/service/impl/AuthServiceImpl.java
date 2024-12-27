@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -58,6 +59,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(registerDto.password()));
         user.setAccountNonLocked(true);
         user.setName(registerDto.name());
+        user.setRoles(registerDto.role());
         userRepository.save(user);
     }
 
