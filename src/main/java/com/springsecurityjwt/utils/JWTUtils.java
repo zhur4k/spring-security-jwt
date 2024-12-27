@@ -20,7 +20,7 @@ public class JWTUtils {
     private static final long EXPIRATION_TIME_REFRESH_TOKEN = 4 * 24 * 60 * 60 * 1000;
 
     public JWTUtils() {
-        String secretKey = "mySecretKey";
+        String secretKey = "mySecretKeymySecretKeyymySecretKeyymySecretKey";
         byte[] keyBytes = secretKey.getBytes();
         this.secretKey = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
@@ -61,10 +61,10 @@ public class JWTUtils {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         String username = extractUsername(token);
-        return userDetails.getUsername().equals(username) && isTokenExpired(token);
+        return userDetails.getUsername().equals(username) && isTokenNonExpired(token);
     }
 
-    private boolean isTokenExpired(String token) {
+    private boolean isTokenNonExpired(String token) {
         return extractClaims(token, Claims::getExpiration).before(new Date());
     }
 }
