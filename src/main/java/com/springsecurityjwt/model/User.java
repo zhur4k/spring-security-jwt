@@ -26,6 +26,8 @@ public class User implements UserDetails {
 
     private boolean isAccountNonLocked;
 
+    private int failedAttempts = 0;
+
     @Override
     public boolean isAccountNonLocked() {
         return isAccountNonLocked;

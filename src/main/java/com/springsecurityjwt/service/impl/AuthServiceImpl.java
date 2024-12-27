@@ -10,9 +10,12 @@ import com.springsecurityjwt.service.AuthService;
 import com.springsecurityjwt.utils.JWTUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,20 +34,44 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
+
     @Override
     public TokenResponseDto login(LoginDto loginDto) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.username(),
-                        loginDto.password()
-                )
-        );
-        UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.username());
+        User user = userRepository.findByUsername(loginDto.username())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return new TokenResponseDto(
-                jwtUtils.generateToken(userDetails),
-                jwtUtils.generateRefreshToken(new HashMap<>(), userDetails)
-        );
+        if (!user.isAccountNonLocked()) {
+            throw new LockedException("Account is locked");
+        }
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDto.username(),
+                            loginDto.password()
+                    )
+            );
+
+            user.setFailedAttempts(0);
+            userRepository.save(user);
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.username());
+
+            return new TokenResponseDto(
+                    jwtUtils.generateToken(userDetails),
+                    jwtUtils.generateRefreshToken(new HashMap<>(), userDetails)
+            );
+        } catch (BadCredentialsException e) {
+            int attempts = user.getFailedAttempts() + 1;
+            user.setFailedAttempts(attempts);
+
+            if (attempts >= 5) {
+                user.setAccountNonLocked(false);
+            }
+
+            userRepository.save(user);
+            throw new BadCredentialsException("Invalid credentials");
+        }
     }
 
     @Override
@@ -59,6 +86,7 @@ public class AuthServiceImpl implements AuthService {
         user.setAccountNonLocked(true);
         user.setName(registerDto.name());
         user.setRoles(registerDto.roles());
+        user.setFailedAttempts(0);
         userRepository.save(user);
     }
 
