@@ -16,3 +16,11 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true # Показывать SQL запросы в логах
     generate-ddl: true # Генерировать DDL схемы
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: src/main/resources/keystore.p12
+    key-store-password: "123456"
+    key-store-type: PKCS12
+    key-alias: "myapp"

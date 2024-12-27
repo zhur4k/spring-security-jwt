@@ -47,6 +47,9 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(loggingFilter, JwtAuthenticationFilter.class)
                 .logout(logout -> logout.logoutSuccessUrl("/login?logout"))
+                .requiresChannel(channel -> channel
+                    .anyRequest().requiresSecure()
+                )
                 .build();
     }
 
