@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(registerDto.password()));
         user.setAccountNonLocked(true);
         user.setName(registerDto.name());
-        user.setRoles(registerDto.role());
+        user.setRoles(registerDto.roles());
         userRepository.save(user);
     }
 
